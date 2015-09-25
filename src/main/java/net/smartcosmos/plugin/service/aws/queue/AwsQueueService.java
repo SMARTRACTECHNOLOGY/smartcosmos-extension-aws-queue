@@ -23,7 +23,6 @@ package net.smartcosmos.plugin.service.aws.queue;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.handlers.AsyncHandler;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQS;
@@ -34,7 +33,6 @@ import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import com.google.common.base.Preconditions;
 import net.smartcosmos.Field;
 import net.smartcosmos.model.queue.IQueueRequest;
@@ -57,6 +55,8 @@ public class AwsQueueService extends AbstractAwsService<AWSCredentials>
     public static final String SERVICE_PARAM_QUEUE_SERVICE_QUEUE_NAME = "queueServiceQueueName";
 
     public static final String DEFAULT_QUEUE_NAME = "net-smartcosmos-default-queue";
+
+    private AmazonSQSAsyncClient sqsAsyncClient;
 
     private boolean onlineFlag = false;
 
@@ -84,6 +84,7 @@ public class AwsQueueService extends AbstractAwsService<AWSCredentials>
         {
             create(queueName);
         }
+        sqsAsyncClient = new AmazonSQSAsyncClient(credentials);
     }
 
     @Override
@@ -212,7 +213,6 @@ public class AwsQueueService extends AbstractAwsService<AWSCredentials>
 
         if (onlineFlag)
         {
-            AmazonSQSAsyncClient sqsAsyncClient = new AmazonSQSAsyncClient(credentials);
             final Region region = assignRegion(sqsAsyncClient);
 
             String targetQueueName = fetchQueueName(queueRequest);
@@ -270,30 +270,10 @@ public class AwsQueueService extends AbstractAwsService<AWSCredentials>
                             .withDataType("String.ReferenceUrn")
                             .withStringValue(queueRequest.getReferenceUrn()));
 
-            sqsAsyncClient.sendMessageAsync(request, new AsyncHandler<SendMessageRequest, SendMessageResult>()
-            {
-                @Override
-                public void onError(Exception e)
-                {
-                    LOG.error("Error sending to queue named {} in region {} for Queue URN {}: {}",
-                            new Object[]{queueRequest.getQueueName(),
-                                    region.getName(),
-                                    enqueueUrn, e.getMessage()});
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onSuccess(SendMessageRequest request, SendMessageResult sendMessageResult)
-                {
-                    LOG.info("Queue URN {} sent to queue {} in region {} successfully; queued under message ID {}",
-                            new Object[]{enqueueUrn,
-                                    request.getQueueUrl(),
-                                    region.getName(),
-                                    sendMessageResult.getMessageId()});
-                }
-            });
-
+            AwsQueueAsyncHandler asyncHandler = new AwsQueueAsyncHandler(queueRequest, region, enqueueUrn);
+            sqsAsyncClient.sendMessageAsync(request, asyncHandler);
             return enqueueUrn;
+
         } else
         {
             throw new AmazonClientException("AWS Queue Service is not online");
