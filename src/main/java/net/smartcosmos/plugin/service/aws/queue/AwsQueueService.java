@@ -36,6 +36,8 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.google.common.base.Preconditions;
 import net.smartcosmos.Field;
 import net.smartcosmos.model.queue.IQueueRequest;
+import net.smartcosmos.platform.api.annotation.ServiceExtension;
+import net.smartcosmos.platform.api.annotation.ServiceType;
 import net.smartcosmos.platform.api.service.IQueueService;
 import net.smartcosmos.platform.base.AbstractAwsService;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 
+@ServiceExtension(serviceType = ServiceType.QUEUE)
 public class AwsQueueService extends AbstractAwsService<AWSCredentials>
         implements IQueueService
 {
