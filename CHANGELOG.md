@@ -1,5 +1,15 @@
 # SMART COSMOS AWS SQS Queue Service Extension Release Notes
 
+## UNRELEASED
+
+### New Features
+
+* No new features are added in this release.
+
+### Bugfixes & Improvements
+
+* SCE-19 AWS Extensions don't have SDK classes
+
 ## Release 2.0.2 (March 9, 2016)
 
 ### New Features
