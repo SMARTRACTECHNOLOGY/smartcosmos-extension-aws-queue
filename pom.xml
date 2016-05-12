@@ -5,10 +5,10 @@
         <groupId>net.smartcosmos.extension</groupId>
         <artifactId>smartcosmos-extension-starter</artifactId>
         <version>2.14.0</version>
-        <relativePath />
+        <relativePath></relativePath>
     </parent>
     <artifactId>smartcosmos-extension-aws-queue</artifactId>
-    <version>2.0.3-SNAPSHOT</version>
+    <version>2.0.3</version>
 
     <name>SMART COSMOS AWS SQS Queue Service Extension</name>
     <description>A Queue Service Extension for SMART COSMOS</description>
@@ -59,7 +59,7 @@
     <scm>
         <connection>scm:git:git://github.com/SMARTRACTECHNOLOGY/smartcosmos-extension-aws-queue.git</connection>
         <developerConnection>scm:git:git@github.com:SMARTRACTECHNOLOGY/smartcosmos-extension-aws-queue.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v2.0.3</tag>
         <url>https://github.com/SMARTRACTECHNOLOGY/smartcosmos-extension-aws-queue</url>
     </scm>
 </project>
